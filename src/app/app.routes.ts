@@ -22,5 +22,16 @@ export const routes: Routes = [
         title: 'Edit site',
         loadComponent: () => import('./features/sites/pages/site-form/site-form').then((m) => m.SiteForm),
     },
-    { path: '**', redirectTo: 'sites' },
+        { path: '', redirectTo: 'dives', pathMatch: 'full' },
+    {
+        path: 'dives',
+        title: 'Dive log',
+        loadComponent: () => import('./features/dives/pages/dive-list/dive-list').then((m) => m.DiveList),
+    },
+    {
+        path: 'dives/:id',
+        title: 'Dive details',
+        loadComponent: () => import('./features/dives/pages/dive-details/dive-details').then((m) => m.DiveDetails),
+    },
+    { path: '**', redirectTo: 'dives' },
 ];

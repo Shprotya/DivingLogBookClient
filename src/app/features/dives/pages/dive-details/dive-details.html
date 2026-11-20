@@ -1,1 +1,59 @@
-<p>dive-details works!</p>
+<a matButton routerLink="/dives">← All dives</a>
+
+@let s = state();
+@if (s.status === 'loading') {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading dive" />
+} @else if (s.status === 'error') {
+    <p role="alert">{{ s.message }}</p>
+} @else {
+    @let dive = s.data;
+
+    <h1>{{ dive.date | date: 'fullDate' }}</h1>
+    <p class="subtitle">
+        <a [routerLink]="['/sites', siteId(dive.site)]">{{ siteName(dive.site) }}</a>
+    </p>
+
+    <dl class="facts">
+        <div><dt>Max depth</dt><dd>{{ dive.maxDepth }} m</dd></div>
+        <div><dt>Duration</dt><dd>{{ dive.duration }} min</dd></div>
+        @if (dive.waterTemp != null) {
+            <div><dt>Water</dt><dd>{{ dive.waterTemp }} °C</dd></div>
+        }
+        @if (dive.visibility != null) {
+            <div><dt>Visibility</dt><dd>{{ dive.visibility }} m</dd></div>
+        }
+        @if (dive.rating) {
+            <div>
+                <dt>Rating</dt>
+                <dd [attr.aria-label]="dive.rating + ' out of 5'">{{ '★'.repeat(dive.rating) }}</dd>
+            </div>
+        }
+    </dl>
+
+    @if (dive.notes) {
+        <h2>Notes</h2>
+        <p>{{ dive.notes }}</p>
+    }
+
+    <h2>Sightings</h2>
+    @if (dive.sightings.length) {
+        <ul>
+            @for (sighting of dive.sightings; track $index) {
+                <li>{{ sighting.name }} × {{ sighting.count }}</li>
+            }
+        </ul>
+    } @else {
+        <p>No sightings recorded.</p>
+    }
+
+    @if (deleteError(); as message) {
+        <p role="alert" class="error">{{ message }}</p>
+    }
+
+    <div class="actions">
+        <a matButton="filled" [routerLink]="['/dives', dive._id, 'edit']">Edit</a>
+        <button matButton="outlined" type="button" (click)="deleteDive(dive)" [disabled]="deleting()">
+            {{ deleting() ? 'Deleting…' : 'Delete' }}
+        </button>
+    </div>
+}
