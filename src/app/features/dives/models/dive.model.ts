@@ -46,3 +46,13 @@ export interface DiveFilters {
     minRating?: number;
     sort?: string;
 }
+
+// The site's name, whichever shape the API sent (an id has no name)
+export function siteName(site: Dive['site']): string {
+    return typeof site === 'string' ? '' : site.name;
+}
+
+// The site's id, whichever shape the API sent
+export function siteId(site: Dive['site']): string {
+    return typeof site === 'string' ? site : site._id;
+}
