@@ -12,9 +12,10 @@
     <p class="subtitle">{{ site.country }}</p>
 
     <dl class="facts">
-        <div><dt>Type</dt><dd>{{ site.siteType | titlecase }}</dd></div>
-        <div><dt>Difficulty</dt><dd>{{ site.difficulty | titlecase }}</dd></div>
-        <div><dt>Max depth</dt><dd>{{ site.maxDepth }} m</dd></div>
+        <div class="fact"><dt>Type</dt><dd>{{ site.siteType | titlecase }}</dd></div>
+        <div class="fact"><dt>Difficulty</dt><dd>{{ site.difficulty | titlecase }}</dd></div>
+        <div class="fact"><dt>Max depth</dt><dd>{{ site.maxDepth }} m</dd></div>
+        <div class="fact"><dt>Dives logged</dt><dd>{{ s.data.dives.length }}</dd></div>
     </dl>
 
     @if (deleteError(); as message) {
@@ -28,17 +29,21 @@
         </button>
     </div>
 
-    <h2>Dives here ({{ s.data.dives.length }})</h2>
-    @if (s.data.dives.length) {
-        <ul class="dives">
-            @for (dive of s.data.dives; track dive._id) {
-                <li>
-                    <a [routerLink]="['/dives', dive._id]">{{ dive.date | date: 'mediumDate' }}</a>
-                    · {{ dive.maxDepth }} m · {{ dive.duration }} min
-                </li>
+    <mat-card appearance="outlined">
+        <mat-card-content>
+            <h2 class="card-heading">Dives here</h2>
+            @if (s.data.dives.length) {
+                <ul>
+                    @for (dive of s.data.dives; track dive._id) {
+                        <li>
+                            <a [routerLink]="['/dives', dive._id]">{{ dive.date | date: 'mediumDate' }}</a>
+                            · {{ dive.maxDepth }} m · {{ dive.duration }} min
+                        </li>
+                    }
+                </ul>
+            } @else {
+                <p>No dives logged here yet.</p>
             }
-        </ul>
-    } @else {
-        <p>No dives logged here yet.</p>
-    }
+        </mat-card-content>
+    </mat-card>
 }

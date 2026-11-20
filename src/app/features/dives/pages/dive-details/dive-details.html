@@ -14,37 +14,45 @@
     </p>
 
     <dl class="facts">
-        <div><dt>Max depth</dt><dd>{{ dive.maxDepth }} m</dd></div>
-        <div><dt>Duration</dt><dd>{{ dive.duration }} min</dd></div>
+        <div class="fact"><dt>Max depth</dt><dd>{{ dive.maxDepth }} m</dd></div>
+        <div class="fact"><dt>Duration</dt><dd>{{ dive.duration }} min</dd></div>
         @if (dive.waterTemp != null) {
-            <div><dt>Water</dt><dd>{{ dive.waterTemp }} °C</dd></div>
+            <div class="fact"><dt>Water</dt><dd>{{ dive.waterTemp }} °C</dd></div>
         }
         @if (dive.visibility != null) {
-            <div><dt>Visibility</dt><dd>{{ dive.visibility }} m</dd></div>
+            <div class="fact"><dt>Visibility</dt><dd>{{ dive.visibility }} m</dd></div>
         }
         @if (dive.rating) {
-            <div>
+            <div class="fact">
                 <dt>Rating</dt>
                 <dd [attr.aria-label]="dive.rating + ' out of 5'">{{ '★'.repeat(dive.rating) }}</dd>
             </div>
         }
     </dl>
 
-    @if (dive.notes) {
-        <h2>Notes</h2>
-        <p>{{ dive.notes }}</p>
-    }
+    <div class="columns">
+        <mat-card appearance="outlined">
+            <mat-card-content>
+                <h2 class="card-heading">Notes</h2>
+                <p>{{ dive.notes || 'No notes.' }}</p>
+            </mat-card-content>
+        </mat-card>
 
-    <h2>Sightings</h2>
-    @if (dive.sightings.length) {
-        <ul>
-            @for (sighting of dive.sightings; track $index) {
-                <li>{{ sighting.name }} × {{ sighting.count }}</li>
-            }
-        </ul>
-    } @else {
-        <p>No sightings recorded.</p>
-    }
+        <mat-card appearance="outlined">
+            <mat-card-content>
+                <h2 class="card-heading">Sightings</h2>
+                @if (dive.sightings.length) {
+                    <ul>
+                        @for (sighting of dive.sightings; track $index) {
+                            <li>{{ sighting.name }} × {{ sighting.count }}</li>
+                        }
+                    </ul>
+                } @else {
+                    <p>No sightings recorded.</p>
+                }
+            </mat-card-content>
+        </mat-card>
+    </div>
 
     @if (deleteError(); as message) {
         <p role="alert" class="error">{{ message }}</p>
