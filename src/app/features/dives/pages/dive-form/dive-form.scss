@@ -1,0 +1,55 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    max-width: 720px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    mat-form-field {
+        flex: 1 1 180px;
+    }
+}
+
+.sightings {
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 8px 0 16px;
+
+    legend {
+        padding: 0 4px;
+        font-weight: 500;
+    }
+}
+
+.sighting-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+
+    .name {
+        flex: 3 1 180px;
+    }
+
+    .count {
+        flex: 1 1 90px;
+    }
+}
+
+.hint {
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+.error {
+    color: var(--mat-sys-error);
+}

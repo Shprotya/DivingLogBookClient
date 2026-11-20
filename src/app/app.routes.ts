@@ -28,10 +28,20 @@ export const routes: Routes = [
         title: 'Dive log',
         loadComponent: () => import('./features/dives/pages/dive-list/dive-list').then((m) => m.DiveList),
     },
+        {
+        path: 'dives/new',
+        title: 'Log a dive',
+        loadComponent: () => import('./features/dives/pages/dive-form/dive-form').then((m) => m.DiveForm),
+    },
     {
         path: 'dives/:id',
         title: 'Dive details',
         loadComponent: () => import('./features/dives/pages/dive-details/dive-details').then((m) => m.DiveDetails),
+    },
+    {
+        path: 'dives/:id/edit',
+        title: 'Edit dive',
+        loadComponent: () => import('./features/dives/pages/dive-form/dive-form').then((m) => m.DiveForm),
     },
     { path: '**', redirectTo: 'dives' },
 ];

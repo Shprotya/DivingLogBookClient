@@ -1,1 +1,157 @@
-<p>dive-form works!</p>
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+    <h1>{{ isEdit() ? 'Edit dive' : 'Log a dive' }}</h1>
+
+    @if (loadError(); as message) {
+        <p role="alert" class="error">{{ message }}</p>
+    }
+    @if (saving()) {
+        <mat-progress-bar mode="indeterminate" aria-label="Saving" />
+    }
+
+    <div class="row">
+        <mat-form-field>
+            <mat-label>Date</mat-label>
+            <input matInput type="date" formControlName="date" [max]="today" />
+            @if (form.controls.date.hasError('required')) {
+                <mat-error>Date is required</mat-error>
+            } @else if (form.controls.date.hasError('future')) {
+                <mat-error>The date can't be in the future</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Site</mat-label>
+            <mat-select formControlName="site">
+                @for (site of sites(); track site._id) {
+                    <mat-option [value]="site._id">{{ site.name }}, {{ site.country }}</mat-option>
+                }
+            </mat-select>
+            @if (form.controls.site.hasError('required')) {
+                <mat-error>Choose a site</mat-error>
+            } @else if (form.controls.site.hasError('server')) {
+                <mat-error>{{ form.controls.site.getError('server') }}</mat-error>
+            }
+        </mat-form-field>
+    </div>
+
+    <div class="row">
+        <mat-form-field>
+            <mat-label>Max depth</mat-label>
+            <input matInput type="number" formControlName="maxDepth" min="1" max="130" />
+            <span matTextSuffix>m</span>
+            @if (selectedSite(); as site) {
+                <mat-hint>This site goes to {{ site.maxDepth }} m</mat-hint>
+            }
+            @if (form.controls.maxDepth.hasError('required')) {
+                <mat-error>Depth is required</mat-error>
+            } @else if (form.controls.maxDepth.hasError('min') || form.controls.maxDepth.hasError('max')) {
+                <mat-error>Depth must be between 1 and 130 m</mat-error>
+            } @else if (form.controls.maxDepth.hasError('tooDeep')) {
+                <mat-error>Deeper than this site's {{ form.controls.maxDepth.getError('tooDeep').max }} m</mat-error>
+            } @else if (form.controls.maxDepth.hasError('server')) {
+                <mat-error>{{ form.controls.maxDepth.getError('server') }}</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Duration</mat-label>
+            <input matInput type="number" formControlName="duration" min="1" max="300" />
+            <span matTextSuffix>min</span>
+            @if (form.controls.duration.hasError('required')) {
+                <mat-error>Duration is required</mat-error>
+            } @else if (form.controls.duration.hasError('pattern')) {
+                <mat-error>Use whole minutes</mat-error>
+            } @else if (form.controls.duration.invalid) {
+                <mat-error>Duration must be between 1 and 300 minutes</mat-error>
+            }
+        </mat-form-field>
+    </div>
+
+    <div class="row">
+        <mat-form-field>
+            <mat-label>Water temperature</mat-label>
+            <input matInput type="number" formControlName="waterTemp" />
+            <span matTextSuffix>°C</span>
+            <mat-hint>Optional</mat-hint>
+            @if (form.controls.waterTemp.invalid) {
+                <mat-error>Must be between −2 and 35 °C</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Visibility</mat-label>
+            <input matInput type="number" formControlName="visibility" />
+            <span matTextSuffix>m</span>
+            <mat-hint>Optional</mat-hint>
+            @if (form.controls.visibility.invalid) {
+                <mat-error>Must be between 0 and 60 m</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Rating</mat-label>
+            <mat-select formControlName="rating">
+                <mat-option [value]="null">No rating</mat-option>
+                @for (r of ratings; track r) {
+                    <mat-option [value]="r">{{ '★'.repeat(r) }} ({{ r }})</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <mat-form-field>
+        <mat-label>Notes</mat-label>
+        <textarea matInput formControlName="notes" rows="3"></textarea>
+        <mat-hint align="end">{{ form.controls.notes.value.length }} / 1000</mat-hint>
+        @if (form.controls.notes.hasError('maxlength')) {
+            <mat-error>Notes must be 1000 characters or fewer</mat-error>
+        }
+    </mat-form-field>
+
+    <fieldset formArrayName="sightings" class="sightings">
+        <legend>Sightings</legend>
+
+        @for (group of sightings.controls; track group; let i = $index) {
+            <div class="sighting-row" [formGroupName]="i">
+                <mat-form-field class="name">
+                    <mat-label>Animal</mat-label>
+                    <input matInput formControlName="name" placeholder="e.g. grey seal" />
+                    @if (group.controls.name.hasError('required')) {
+                        <mat-error>Name the animal</mat-error>
+                    } @else if (group.controls.name.hasError('blank')) {
+                        <mat-error>Can't be only spaces</mat-error>
+                    } @else if (group.controls.name.hasError('maxlength')) {
+                        <mat-error>60 characters at most</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field class="count">
+                    <mat-label>Count</mat-label>
+                    <input matInput type="number" formControlName="count" min="1" />
+                    @if (group.controls.count.invalid) {
+                        <mat-error>At least 1</mat-error>
+                    }
+                </mat-form-field>
+
+                <button matButton type="button" (click)="removeSighting(i)" [attr.aria-label]="'Remove sighting ' + (i + 1)">
+                    Remove
+                </button>
+            </div>
+        } @empty {
+            <p class="hint">No sightings added.</p>
+        }
+
+        <button matButton="outlined" type="button" (click)="addSighting()">Add sighting</button>
+    </fieldset>
+
+    @if (saveError(); as message) {
+        <p role="alert" class="error">{{ message }}</p>
+    }
+
+    <div class="actions">
+        <button matButton="filled" type="submit" [disabled]="saving()">
+            {{ saving() ? 'Saving…' : isEdit() ? 'Update dive' : 'Log dive' }}
+        </button>
+        <a matButton [routerLink]="isEdit() ? ['/dives', id()] : ['/dives']">Cancel</a>
+    </div>
+</form>
