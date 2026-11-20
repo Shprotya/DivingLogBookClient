@@ -1,1 +1,80 @@
-<p>dive-list works!</p>
+<div class="page-header">
+    <h1>Dive log</h1>
+    <a matButton="filled" routerLink="/dives/new">Log a dive</a>
+</div>
+
+<section class="filters" aria-label="Filter dives">
+    <mat-form-field>
+        <mat-label>Site</mat-label>
+        <mat-select [value]="filters().site ?? ''" (selectionChange)="setFilter('site', $event.value)">
+            <mat-option value="">Any</mat-option>
+            @for (site of sites(); track site._id) {
+                <mat-option [value]="site._id">{{ site.name }}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Sighting</mat-label>
+        <input matInput [formControl]="sightingSearch" placeholder="e.g. seal" />
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Minimum rating</mat-label>
+        <mat-select [value]="filters().minRating ?? ''" (selectionChange)="setFilter('minRating', $event.value)">
+            <mat-option value="">Any</mat-option>
+            @for (r of ratings; track r) {
+                <mat-option [value]="r">{{ r }}+</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Sort by</mat-label>
+        <mat-select [value]="filters().sort" (selectionChange)="setFilter('sort', $event.value)">
+            <mat-option value="-date">Newest first</mat-option>
+            <mat-option value="date">Oldest first</mat-option>
+            <mat-option value="-maxDepth">Deepest first</mat-option>
+            <mat-option value="-rating">Best rated first</mat-option>
+        </mat-select>
+    </mat-form-field>
+</section>
+
+@let s = state();
+@if (s.status === 'loading') {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading dives" />
+} @else if (s.status === 'error') {
+    <p role="alert">{{ s.message }}</p>
+} @else {
+    <div class="grid">
+        @for (dive of s.data; track dive._id) {
+            <mat-card appearance="outlined">
+                <mat-card-header>
+                    <mat-card-title>
+                        <a [routerLink]="['/dives', dive._id]">{{ dive.date | date: 'mediumDate' }}</a>
+                    </mat-card-title>
+                    <mat-card-subtitle>{{ siteName(dive.site) }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                        {{ dive.maxDepth }} m · {{ dive.duration }} min
+                        @if (dive.rating) {
+                            · <span [attr.aria-label]="'Rated ' + dive.rating + ' out of 5'">{{ '★'.repeat(dive.rating) }}</span>
+                        }
+                    </p>
+                    @if (dive.sightings.length) {
+                        <p class="sightings">
+                            @for (sighting of dive.sightings; track $index) {
+                                <span class="chip">
+                                    {{ sighting.name }}@if (sighting.count > 1) { ×{{ sighting.count }} }
+                                </span>
+                            }
+                        </p>
+                    }
+                </mat-card-content>
+            </mat-card>
+        } @empty {
+            <p>No dives match these filters.</p>
+        }
+    </div>
+}
