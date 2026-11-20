@@ -1,1 +1,92 @@
-<p>site-form works!</p>
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+    <h1>{{ isEdit() ? 'Edit site' : 'Add a site' }}</h1>
+
+    @if (loadError(); as message) {
+        <p role="alert" class="error">{{ message }}</p>
+    }
+    @if (saving()) {
+        <mat-progress-bar mode="indeterminate" aria-label="Saving" />
+    }
+
+    <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g. Dalkey Island" />
+        @if (form.controls.name.hasError('required')) {
+            <mat-error>Name is required</mat-error>
+        } @else if (form.controls.name.hasError('minlength')) {
+            <mat-error>Name must be at least 2 characters</mat-error>
+        } @else if (form.controls.name.hasError('maxlength')) {
+            <mat-error>Name must be 100 characters or fewer</mat-error>
+        } @else if (form.controls.name.hasError('blank')) {
+            <mat-error>Name cannot be only spaces</mat-error>
+        } @else if (form.controls.name.hasError('server')) {
+            <mat-error>{{ form.controls.name.getError('server') }}</mat-error>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Country</mat-label>
+        <input matInput formControlName="country" placeholder="e.g. Ireland" />
+        @if (form.controls.country.hasError('required')) {
+            <mat-error>Country is required</mat-error>
+        } @else if (form.controls.country.hasError('minlength')) {
+            <mat-error>Country must be at least 2 characters</mat-error>
+        } @else if (form.controls.country.hasError('maxlength')) {
+            <mat-error>Country must be 60 characters or fewer</mat-error>
+        } @else if (form.controls.country.hasError('blank')) {
+            <mat-error>Country cannot be only spaces</mat-error>
+        } @else if (form.controls.country.hasError('server')) {
+            <mat-error>{{ form.controls.country.getError('server') }}</mat-error>
+        }
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Maximum depth</mat-label>
+        <input matInput type="number" formControlName="maxDepth" min="1" max="130" />
+        <span matTextSuffix>m</span>
+        @if (form.controls.maxDepth.hasError('required')) {
+            <mat-error>Maximum depth is required</mat-error>
+        } @else if (form.controls.maxDepth.hasError('min') || form.controls.maxDepth.hasError('max')) {
+            <mat-error>Depth must be between 1 and 130 m</mat-error>
+        } @else if (form.controls.maxDepth.hasError('server')) {
+            <mat-error>{{ form.controls.maxDepth.getError('server') }}</mat-error>
+        }
+    </mat-form-field>
+
+    <div class="row">
+        <mat-form-field>
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="siteType">
+                @for (type of siteTypes; track type) {
+                    <mat-option [value]="type">{{ type | titlecase }}</mat-option>
+                }
+            </mat-select>
+            @if (form.controls.siteType.hasError('required')) {
+                <mat-error>Choose a site type</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Difficulty</mat-label>
+            <mat-select formControlName="difficulty">
+                @for (level of difficulties; track level) {
+                    <mat-option [value]="level">{{ level | titlecase }}</mat-option>
+                }
+            </mat-select>
+            @if (form.controls.difficulty.hasError('required')) {
+                <mat-error>Choose a difficulty</mat-error>
+            }
+        </mat-form-field>
+    </div>
+
+    @if (saveError(); as message) {
+        <p role="alert" class="error">{{ message }}</p>
+    }
+
+    <div class="actions">
+        <button matButton="filled" type="submit" [disabled]="saving()">
+            {{ saving() ? 'Saving…' : isEdit() ? 'Update site' : 'Add site' }}
+        </button>
+        <a matButton [routerLink]="isEdit() ? ['/sites', id()] : ['/sites']">Cancel</a>
+    </div>
+</form>
