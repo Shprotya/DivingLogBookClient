@@ -1,0 +1,32 @@
+.subtitle {
+    margin-top: -8px;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+
+    dt {
+        font-weight: 500;
+    }
+
+    dd {
+        margin: 0;
+    }
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.error {
+    color: var(--mat-sys-error);
+}
+
+.dives li {
+    margin-bottom: 8px;
+}

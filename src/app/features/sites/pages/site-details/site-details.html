@@ -1,1 +1,44 @@
-<p>site-details works!</p>
+<a matButton routerLink="/sites">← All sites</a>
+
+@let s = state();
+@if (s.status === 'loading') {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading site" />
+} @else if (s.status === 'error') {
+    <p role="alert">{{ s.message }}</p>
+} @else {
+    @let site = s.data.site;
+
+    <h1>{{ site.name }}</h1>
+    <p class="subtitle">{{ site.country }}</p>
+
+    <dl class="facts">
+        <div><dt>Type</dt><dd>{{ site.siteType | titlecase }}</dd></div>
+        <div><dt>Difficulty</dt><dd>{{ site.difficulty | titlecase }}</dd></div>
+        <div><dt>Max depth</dt><dd>{{ site.maxDepth }} m</dd></div>
+    </dl>
+
+    @if (deleteError(); as message) {
+        <p role="alert" class="error">{{ message }}</p>
+    }
+
+    <div class="actions">
+        <a matButton="filled" [routerLink]="['/sites', site._id, 'edit']">Edit</a>
+        <button matButton="outlined" type="button" (click)="deleteSite(site)" [disabled]="deleting()">
+            {{ deleting() ? 'Deleting…' : 'Delete' }}
+        </button>
+    </div>
+
+    <h2>Dives here ({{ s.data.dives.length }})</h2>
+    @if (s.data.dives.length) {
+        <ul class="dives">
+            @for (dive of s.data.dives; track dive._id) {
+                <li>
+                    <a [routerLink]="['/dives', dive._id]">{{ dive.date | date: 'mediumDate' }}</a>
+                    · {{ dive.maxDepth }} m · {{ dive.duration }} min
+                </li>
+            }
+        </ul>
+    } @else {
+        <p>No dives logged here yet.</p>
+    }
+}
