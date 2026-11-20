@@ -132,3 +132,13 @@ mat-card-title a {
 .error {
     color: var(--mat-sys-error);
 }
+
+// Material's heading styles, each with a line height that matches its size
+h1 {
+    font: var(--mat-sys-headline-large);
+    margin: 16px 0 8px;
+}
+
+h2 {
+    font: var(--mat-sys-title-large);
+}
