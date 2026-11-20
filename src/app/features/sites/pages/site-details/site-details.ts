@@ -10,6 +10,7 @@ import { SiteService } from '../../services/site.service';
 import { Site } from '../../models/site.model';
 import { Dive } from '../../../dives/models/dive.model';
 import { LoadState, withLoadState } from '../../../../shared/load-state';
+import { MatCardModule } from '@angular/material/card';
 
 interface SiteWithDives {
     site: Site;
@@ -18,7 +19,7 @@ interface SiteWithDives {
 
 @Component({
     selector: 'app-site-details',
-    imports: [RouterLink, DatePipe, TitleCasePipe, MatButtonModule, MatProgressBarModule],
+    imports: [RouterLink, DatePipe, TitleCasePipe, MatButtonModule, MatProgressBarModule, MatCardModule],
     templateUrl: './site-details.html',
     styleUrl: './site-details.scss',
 })

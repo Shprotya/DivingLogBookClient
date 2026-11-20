@@ -9,10 +9,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DiveService } from '../../services/dive.service';
 import { Dive, siteId, siteName } from '../../models/dive.model';
 import { LoadState, withLoadState } from '../../../../shared/load-state';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
     selector: 'app-dive-details',
-    imports: [RouterLink, DatePipe, MatButtonModule, MatProgressBarModule],
+    imports: [RouterLink, DatePipe, MatButtonModule, MatProgressBarModule, MatCardModule],
     templateUrl: './dive-details.html',
     styleUrl: './dive-details.scss',
 })
