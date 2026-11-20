@@ -1,1 +1,61 @@
-<p>site-list works!</p>
+<div class="page-header">
+    <h1>Dive sites</h1>
+    <a matButton="filled" routerLink="/sites/new">Add site</a>
+</div>
+
+<section class="filters" aria-label="Filter sites">
+    <mat-form-field>
+        <mat-label>Type</mat-label>
+        <mat-select [value]="filters().siteType ?? ''" (selectionChange)="setFilter('siteType', $event.value)">
+            <mat-option value="">Any</mat-option>
+            @for (type of siteTypes; track type) {
+                <mat-option [value]="type">{{ type | titlecase }}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Difficulty</mat-label>
+        <mat-select [value]="filters().difficulty ?? ''" (selectionChange)="setFilter('difficulty', $event.value)">
+            <mat-option value="">Any</mat-option>
+            @for (level of difficulties; track level) {
+                <mat-option [value]="level">{{ level | titlecase }}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Sort by</mat-label>
+        <mat-select [value]="filters().sort" (selectionChange)="setFilter('sort', $event.value)">
+            <mat-option value="name">Name</mat-option>
+            <mat-option value="country">Country</mat-option>
+            <mat-option value="-maxDepth">Deepest first</mat-option>
+            <mat-option value="maxDepth">Shallowest first</mat-option>
+        </mat-select>
+    </mat-form-field>
+</section>
+
+@let s = state();
+@if (s.status === 'loading') {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading sites" />
+} @else if (s.status === 'error') {
+    <p role="alert">{{ s.message }}</p>
+} @else {
+    <div class="grid">
+        @for (site of s.data; track site._id) {
+            <mat-card appearance="outlined">
+                <mat-card-header>
+                    <mat-card-title>
+                        <a [routerLink]="['/sites', site._id]">{{ site.name }}</a>
+                    </mat-card-title>
+                    <mat-card-subtitle>{{ site.country }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>{{ site.siteType | titlecase }} · {{ site.difficulty | titlecase }} · up to {{ site.maxDepth }} m</p>
+                </mat-card-content>
+            </mat-card>
+        } @empty {
+            <p>No sites match these filters.</p>
+        }
+    </div>
+}
